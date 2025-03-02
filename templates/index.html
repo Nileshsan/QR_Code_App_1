@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Storage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>QR Code Storage System</h2>
+        
+        <div class="form-group">
+            <input type="text" id="idInput" placeholder="Enter ID">
+            <input type="file" id="qrInput" accept="image/*">
+            <button onclick="addEntry()">Add Entry</button>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>QR Code</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="qrTable">
+                <!-- Entries will be added dynamically here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
