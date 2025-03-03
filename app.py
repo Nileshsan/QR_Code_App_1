@@ -62,20 +62,24 @@ def add_entry():
         return jsonify({"success": False, "message": str(e)}), 500
 
 # API: Delete an entry
-@app.route('/delete_entry/<entry_id>', methods=['DELETE'])
+@app.route("/delete_entry/<string:entry_id>", methods=["DELETE"])
 def delete_entry(entry_id):
     try:
+        print(f"Received request to delete entry: {entry_id}")  # Debugging
         entry = QRCode.query.filter_by(entry_id=entry_id).first()
         if not entry:
-            return jsonify({"success": False, "message": "Entry not found"}), 404
+            return jsonify({"success": False, "message": f"Entry ID {entry_id} not found"}), 404
 
         db.session.delete(entry)
         db.session.commit()
         return jsonify({"success": True, "message": "Entry deleted successfully"})
 
     except Exception as e:
+        print("Error:", e)  # Debugging
         return jsonify({"success": False, "message": str(e)}), 500
 
 # Run the Flask app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+

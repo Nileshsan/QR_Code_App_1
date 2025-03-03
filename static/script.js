@@ -3,23 +3,29 @@ document.addEventListener("DOMContentLoaded", fetchEntries);
 // Function to add an entry to the table
 function addEntryToTable(entry_id, qr_code) {
     let table = document.getElementById("qrTable");
-    let row = table.insertRow();
+    let row = document.createElement("tr");
 
-    let idCell = row.insertCell(0);
+    let idCell = document.createElement("td");
     idCell.textContent = entry_id;
+    row.appendChild(idCell);
 
-    let qrCell = row.insertCell(1);
+    let qrCell = document.createElement("td");
     let img = document.createElement("img");
     img.src = qr_code;
     img.width = 100;
+    img.onload = () => console.log("Image loaded:", qr_code); // Debugging
     qrCell.appendChild(img);
+    row.appendChild(qrCell);
 
-    let deleteCell = row.insertCell(2);
+    let deleteCell = document.createElement("td");
     let deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.classList.add("delete-btn");
     deleteBtn.onclick = function () { deleteEntry(entry_id, row); };
     deleteCell.appendChild(deleteBtn);
+    row.appendChild(deleteCell);
+
+    table.appendChild(row);
 }
 
 // Function to add an entry
@@ -64,24 +70,27 @@ async function fetchEntries() {
         const entries = await response.json();
 
         let tableBody = document.getElementById("qrTable");
-        tableBody.innerHTML = "";
+        tableBody.innerHTML = "";  // Clear previous entries
 
         entries.forEach(entry => {
             addEntryToTable(entry.entry_id, entry.qr_code);
         });
     } catch (error) {
-        alert("Error fetching data: " + error);
+        console.error("Error fetching data:", error);
     }
 }
+
 
 // Function to delete an entry
 async function deleteEntry(entry_id, row) {
     try {
         let response = await fetch(`/delete_entry/${entry_id}`, { method: 'DELETE' });
+        let result = await response.json();
+        
         if (response.ok) {
             row.remove();
         } else {
-            alert("Failed to delete entry.");
+            alert("Failed to delete entry: " + result.message);
         }
     } catch (error) {
         alert("Network error: " + error);
