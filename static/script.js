@@ -40,18 +40,21 @@ async function addEntry() {
 
     let reader = new FileReader();
     reader.onloadend = async function () {
-        let qrBase64 = reader.result;
+        let qrBase64 = reader.result.split(',')[1]; // Remove metadata
+
+        console.log("New QR Image (Base64):", qrBase64.substring(0, 100)); // Debugging
 
         try {
             let response = await fetch('/add_entry', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ entry_id: idInput, qr_code: qrBase64 })
+                body: JSON.stringify({ entry_id: idInput, qr_code: qrBase64 }) // Ensure correct format
             });
 
             let result = await response.json();
             if (response.ok) {
-                addEntryToTable(idInput, qrBase64);
+                addEntryToTable(idInput, `data:image/png;base64,${qrBase64}`); // Correct format
+                alert("Entry added successfully!");
             } else {
                 alert("Error: " + result.message);
             }
@@ -63,6 +66,8 @@ async function addEntry() {
     reader.readAsDataURL(qrInput);
 }
 
+
+
 // Fetch and display entries
 async function fetchEntries() {
     try {
@@ -70,7 +75,7 @@ async function fetchEntries() {
         const entries = await response.json();
 
         let tableBody = document.getElementById("qrTable");
-        tableBody.innerHTML = "";  // Clear previous entries
+        tableBody.innerHTML = "";  // Ensure table clears before adding new entries
 
         entries.forEach(entry => {
             addEntryToTable(entry.entry_id, entry.qr_code);
@@ -79,6 +84,7 @@ async function fetchEntries() {
         console.error("Error fetching data:", error);
     }
 }
+
 
 
 // Function to delete an entry
